@@ -29,12 +29,88 @@ function loadPage(){
 
 // when dialog loads, hide the back button
 $(document).on("pageinit", "#edit-acc-dialog", function() {
-	//$('#dialog-back').css('display', 'none');
+	$('#dialog-back').css('display', 'none');
 })
+$(document).on("pageinit", "#add-acc-dialog", function() {
+	$('#dialog-add-back').css('display', 'none');
+})
+
 
 
 // Page init for account/edit.php
 $(document).on("pageinit", "#editPage", function() {
+
+	loadPage();	
+
+	// Pages and O/S fields are initially hidden
+	$('.pages-field').css("display", "none");
+	$('.os-field').css("display", "none");
+
+	
+
+	/* Slide-down menu stuff */
+	
+	// Add slide-down menu here so jqm doesn't interfere	
+	var menu = $('<nav id="mobile"><ul id="mmenu">' + 
+		'<li><a href="#">Admin Home</a></li>' +
+        '<li><a href="#">Logout</a></li>' + 
+		'</ul></nav>');
+	$('#editPage div[data-role="header"]').after(menu);
+
+	// hide it initially	
+	$("#mmenu").hide();
+
+    $(".navtoggle").click(function() {
+        $("#mmenu").slideToggle(500);
+    });
+	
+
+
+	/* edit/add controlgroup stuff */
+	
+	// when page first loads, view button is selected
+	$('#btn-view-item').addClass('ui-btn-active');
+	$('#section-edit').hide();
+	$('#section-acc').hide();
+	
+
+	// EVENT: click "view/edit"/"add accessory" button
+	$('#editnav a').click(function(e){
+		var id = $(this).attr('id');
+
+		// make current selection button active
+		$(this).parent().find('a').removeClass('ui-btn-active');
+		$(this).addClass('ui-btn-active');
+		
+		if (id == 'btn-view-item') {
+			// show #section-add, hide #section-edit & #section-view
+			$('#section-view').show();
+			$('#section-acc').hide();
+			$('#section-edit').hide();
+			
+			// refresh array of item attributes (in case it's been edited since page loaded)
+			resetView();	
+		} 
+		else if (id == 'btn-add-acc') {
+			// show #section-add, hide #section-edit & #section-view
+			$('#section-acc').show();
+			$('#section-edit').hide();
+			$('#section-view').hide();
+			resetAcc();	
+		} 
+		else if (id == 'btn-edit-item') {
+			// show #section-edit, hide #section-add & #section-view
+			$('#section-edit').show();
+			$('#section-acc').hide();
+			$('#section-view').hide();		
+			
+			// reset form
+			$('.message').remove();			// remove any previous messages
+			resetForm();
+		}
+		
+	})
+
 
 	function handleError(str){
 		// remove any previous messages
@@ -44,6 +120,16 @@ $(document).on("pageinit", "#editPage", function() {
 		$('div[data-role="content"]')
 			.prepend( $('<p class="error message">'+str+'</p>') );	
 	}
+
+
+	// EVENT: pagechange
+	$(document).on("pagechange", function(e, ui) {
+		// when the accessories section is shown (need to refresh it every time)
+		if ( ui.toPage.attr("id") == "editPage") {
+			resetAcc();
+		}
+	})
+
 
 	// reset prefilled form values to current db values
 	function resetForm(){	
@@ -124,10 +210,13 @@ $(document).on("pageinit", "#editPage", function() {
 	
 
 
-	// reset Accessories section current item attributes
+	// refresh list of Accessories
 	function resetAcc(){	
-		// append stuff to #section-acc
-		// get fresh array of item attributes
+
+		// first remove old list
+		$('#section-acc ul').remove();
+
+		// get fresh array of acecssories
 		$.ajax({
 			type: "POST",
 			url: "../scripts/get_accessories.php",
@@ -157,22 +246,30 @@ $(document).on("pageinit", "#editPage", function() {
 								arr[i]['acc_description'] = "";
 								
 								list.append($('<li><a href=""><h1>'+ arr[i]['acc_name'] +'</h1>' + 
+								'<p>Quantity: ' + arr[i]['acc_quantity'] + '</div>' +
+								'<div class="acc-quantity">' + arr[i]['acc_quantity'] + '</div>' +
 								'<p class="acc-description">' + arr[i]['acc_description'] + '</p>' +
-								'<p class="acc-quantity">' + arr[i]['acc_quantity'] + '</p>' +
 								'<div class="acc-id">' + arr[i]['acc_id'] + '</div>' +
 								'</a></li>'));														
-						}
+						}						
 					});
 					$('#section-acc').append(list).trigger( "create" );
+					// hide ids
+					$('.acc-id').css('display', 'none');
+					$('.acc-quantity').css('display', 'none');
 					
 					// bind click event for list items
 					$('.acc li').click(function(e){
+						// show form, remove .message, hide back button
+						$('#acc-form').show();					
+						$('#edit-acc-dialog').find('.message').remove();
+						$('#dialog-back').css('display', 'none');
+
 						var id = $(this).find($('.acc-id')).text();
 						var name = $(this).find($('h1')).text();
 						var desc = $(this).find($('.acc-desciption')).text();
 						var quantity = $(this).find($('.acc-quantity')).text();
 						var barcode = $('#barcode').val();
-
 						$.mobile.changePage( "#edit-acc-dialog", { role: "dialog" } );
 						$('#edit-acc-dialog div[data-role="header"] h1').text(name);
 						$('#edit-acc-dialog form input[name="acc_name"]').val(name);
@@ -180,8 +277,7 @@ $(document).on("pageinit", "#editPage", function() {
 						$('#edit-acc-dialog form input[name="acc_description"]').val(desc);
 						$('#edit-acc-dialog form input[name="acc_id"]').val(id);						
 					})
-					
-					
+										
 				}				
 			},			
 			// error function
@@ -193,78 +289,12 @@ $(document).on("pageinit", "#editPage", function() {
 
 
 
-	loadPage();	
-
-
-
-	// Pages and O/S fields are initially hidden
-	$('.pages-field').css("display", "none");
-	$('.os-field').css("display", "none");
-
-	
-
-	/* Slide-down menu stuff */
-	
-	// Add slide-down menu here so jqm doesn't interfere	
-	var menu = $('<nav id="mobile"><ul id="mmenu">' + 
-		'<li><a href="#">Admin Home</a></li>' +
-        '<li><a href="#">Logout</a></li>' + 
-		'</ul></nav>');
-	$('#editPage div[data-role="header"]').after(menu);
-
-	// hide it initially	
-	$("#mmenu").hide();
-
-    $(".navtoggle").click(function() {
-        $("#mmenu").slideToggle(500);
-    });
-	
-
-
-	/* edit/add controlgroup stuff */
-	
-	// when page first loads, view button is selected
-	$('#btn-view-item').addClass('ui-btn-active');
-	$('#section-edit').hide();
-	$('#section-acc').hide();
-	
-
-	// EVENT: click "view/edit"/"add accessory" button
-	$('#editnav a').click(function(e){
-		var id = $(this).attr('id');
-
-		// make current selection button active
-		$(this).parent().find('a').removeClass('ui-btn-active');
-		$(this).addClass('ui-btn-active');
-		
-		if (id == 'btn-view-item') {
-			// show #section-add, hide #section-edit & #section-view
-			$('#section-view').show();
-			$('#section-acc').hide();
-			$('#section-edit').hide();
-			
-			// refresh array of item attributes (in case it's been edited since page loaded)
-			resetView();	
-		} 
-		else if (id == 'btn-add-acc') {
-			// show #section-add, hide #section-edit & #section-view
-			$('#section-acc').show();
-			$('#section-edit').hide();
-			$('#section-view').hide();
-			resetAcc();	
-		} 
-		else if (id == 'btn-edit-item') {
-			// show #section-edit, hide #section-add & #section-view
-			$('#section-edit').show();
-			$('#section-acc').hide();
-			$('#section-view').hide();		
-			
-			// reset form
-			$('.message').remove();			// remove any previous messages
-			resetForm();
-		}
-		
-	})
+	// click "add accessory" button to bring up dialog with form
+	$('#show-acc-form').click(function(e){
+		// enter item's id in hidden field
+		$('#add-acc-dialog input[name="acc_item"]').val($('#barcode').val());
+		$.mobile.changePage( "#add-acc-dialog", { role: "dialog" } );
+	})	
 
 
 	/******* $('#select-choice-min').change() *******/
@@ -538,195 +568,6 @@ $(document).on("pageinit", "#addPage", function() {
 	/************* #submit-edit.click() *************/
 
 });
-
-
-
-
-
-
-/*
-$(document).on("pageinit", "#editView", function() {
-
-	// add type-specific input fields to the form
-	$('#select-choice-min').on('change', function(){
-		var val = $(this).val();
-
-		if ((val == 1) || (val == 2) || (val == 3)) {
-			// add OS input field
-			$('.os-field').css("display", "block");		
-			$('.pages-field').css("display", "none");
-		} else if (val == 4) {
-			// add pages input field
-			$('.pages-field').css("display", "block");
-			$('.os-field').css("display", "none");
-		} else {
-			// hide both
-			$('.pages-field').css("display", "none");
-			$('.os-field').css("display", "none");
-		}
-	})
-
-	$('#submit-edit').click(function(e){
-		e.preventDefault();
-		$.ajax({
-			type: "POST",
-			url: "../scripts/add.php",
-			data: { 
-				barcode: $('#barcode').val(),
-				type: $('#select-choice-min').val(),
-				name: $('#name').val(),
-				model: $('#model').val(),
-				description: $('#description').val(),
-				features: $('#features').val(),
-				condition: $("input[name=condition]:checked").val()
-			}
-		})
-			.done(function(rslt) {
-				$('.error').remove();
-				var arr = $.parseJSON(rslt);
-				console.info(arr);
-				if (arr['errno'] == -1) { // error
-					// display error message
-					$('form').before( $('<p class="error">'+ arr['err'] +'</p>') );
-				} else {// success
-					$('form').before( 
-						$('<p class="message">'+arr['name']+' added successfully!</p>'));
-					$('form').hide();					
-				}				
-			})
-			.fail(function() {
-				$('.error').remove();			
-				$('form').before( 
-					$('<p class="error message">Something went wrong. Try again.</p>') );
-			});		
-	})	
-
-	// append form to content
-	var form = $('<form method="post"></form>');
-
-	var action = $('#addoredit')[0].innerText;
-	var code = $('#item_code').text();
-
-	var fc = $('<div data-role="fieldcontain"></div>');
-
-	// add header to form
-	if (action == 'edit')
-		form.append('<h2>Edit</h2>');
-	else
-		form.append('<h2>Add New</h2>');
-
-
-	// add barcode fieldcontain
-	var code_input = $('<input type="text" name="barcode" id="barcode" "data-mini="true"/>');
-	form.append(fc.clone().append($('<label for="barcode">Barcode:</label>'))
-		.append(code_input)
-	);
-
-	// add type fieldcontain
-	form.append(fc.clone().append($('<div data-role="fieldcontain" ' + 
-	'class="ui-field-contain ui-body ui-br"><label for="select-choice-min" ' +
-	'class="select ui-select">Type:</label><div class="ui-select"><div data-corners="true" ' +
-	'data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-icon="arrow-d" ' +
-	'data-iconpos="right" data-theme="c" data-mini="false" class="ui-btn ui-shadow ui-btn-corner-all '+
-	'ui-fullsize ui-btn-icon-right ui-btn-up-c"><span class="ui-btn-inner"><span class="ui-btn-text">'+
-	'<span></span></span><span class="ui-icon ui-icon-arrow-d ui-icon-shadow">&nbsp;</span></span>'+
-	'<select name="select-choice-min" id="select-choice-min" data-mini="false"><option value="0">'+
-	'</option><option value="1">Hardware</option><option value="2">Computer</option>'+
-	'<option value="3">Mobile</option><option value="4">Book</option><option value="5">Game</option>'+
-	'</select></div></div></div>')));
-				
-
-	// add name fieldcontain
-	form.append(fc.clone().append($('<label for="name">Name:</label>'))
-		.append('<input type="text" name="name" id="name" "data-mini="true"/>')
-	);
-
-	// add model fieldcontain
-	form.append(fc.clone().append($('<label for="model">Model:</label>'))
-		.append('<input type="text" name="model" id="model" "data-mini="true"/>')
-	);
-
-	// add features fieldcontain
-	form.append(fc.clone().append($('<label for="features">Features:</label>'))
-		.append('<input type="text" name="features" id="features" "data-mini="true"/>')
-	);
-
-	// add pages fieldcontain
-	form.append(fc.clone().addClass('pages-field').append($('<label for="pages">Pages:</label>'))
-		.append('<input type="text" name="pages" id="pages" "data-mini="true"/>')
-	);
-
-	// add OS fieldcontain
-	form.append(fc.clone().addClass('os-field').append($('<label for="os">Operating System:</label>'))
-		.append('<input type="text" name="os" id="os" "data-mini="true"/>')
-	);
-
-	// add description fieldcontain
-	form.append(fc.clone().append($('<label for="description">Description:</label>'))
-		.append('<input type="text" name="description" id="description" "data-mini="true"/>')
-	);
-	
-	// add condition fieldcontain
-	var fs = $('<fieldset data-role="controlgroup" data-mini="true" '+
-		'class="ui-corner-all ui-controlgroup ui-controlgroup-vertical ui-mini" aria-disabled="false" '+
-		'data-disabled="false" data-shadow="false" data-corners="true" data-exclude-invisible="true" '+ 
-		'data-type="vertical" data-init-selector=":jqmData(role=\'controlgroup\')">')
-	form.append(fc.clone().append(fs));
-	fs.append('<div role="heading" class="ui-controlgroup-label"><legend>Condition:</legend></div>');
-
-	var controls = $('<div class="ui-controlgroup-controls"></div>');
-	fs.append(controls);
-	controls.append('<div class="ui-radio"><input type="radio" name="condition" id="radio-choice-1" '+
-		'value="N" checked="checked"><label for="radio-choice-1" data-corners="true" '+
-		'data-shadow="false" data-iconshadow="true" data-wrapperels="span" '+
-		'data-icon="radio-on" data-theme="c" data-mini="true" class="ui-radio-on ui-btn '+
-		'ui-btn-up-c ui-btn-corner-all ui-mini ui-btn-icon-left ui-first-child">'+
-		'<span class="ui-btn-inner"><span class="ui-btn-text">New</span><span '+
-		'class="ui-icon ui-icon-radio-on ui-icon-shadow">&nbsp;</span></span></label></div>')
-	  .append('<div class="ui-radio"><input type="radio" name="condition" id="radio-choice-2" value="LN"><label for="radio-choice-2" data-corners="true" data-shadow="false" data-iconshadow="true" data-wrapperels="span" data-icon="radio-off" data-theme="c" data-mini="true" class="ui-radio-off ui-btn ui-btn-up-c ui-btn-corner-all ui-mini ui-btn-icon-left"><span class="ui-btn-inner"><span class="ui-btn-text">Like New</span><span class="ui-icon ui-icon-radio-off ui-icon-shadow">&nbsp;</span></span></label></div>')
-	  .append('<div class="ui-radio"><input type="radio" name="condition" id="radio-choice-3" value="G"><label for="radio-choice-3" data-corners="true" data-shadow="false" data-iconshadow="true" data-wrapperels="span" data-icon="radio-off" data-theme="c" data-mini="true" class="ui-radio-off ui-btn ui-btn-up-c ui-btn-corner-all ui-mini ui-btn-icon-left"><span class="ui-btn-inner"><span class="ui-btn-text">Good</span><span class="ui-icon ui-icon-radio-off ui-icon-shadow">&nbsp;</span></span></label></div>')
-	.append('<div class="ui-radio"><input type="radio" name="condition" id="radio-choice-4" value="P"><label for="radio-choice-4" data-corners="true" data-shadow="false" data-iconshadow="true" data-wrapperels="span" data-icon="radio-off" data-theme="c" data-mini="true" class="ui-radio-off ui-btn ui-btn-up-c ui-btn-corner-all ui-mini ui-btn-icon-left ui-last-child"><span class="ui-btn-inner"><span class="ui-btn-text">Poor</span><span class="ui-icon ui-icon-radio-off ui-icon-shadow">&nbsp;</span></span></label></div>');
-
-
-	// add submit button
-	var z = $('<div data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" ' +
-		'data-theme="a" data-mini="true" data-disabled="false" aria-disabled="false" ' +
-		'class="ui-submit ui-btn ui-shadow ui-btn-corner-all ui-mini ui-btn-up-a">' +	
-		'<span class="ui-btn-inner"><span class="ui-btn-text">Submit</span></span>' + 
-		'<button type="submit" data-theme="a" data-mini="true" id="submit-edit" ' + 
-			'class="ui-btn-hidden" data-disabled="false">Submit</button>');
-		
-	$('<div class="ui-block"></div>')
-		.append(z)
-		.appendTo(
-			$('<fieldset class="ui-grid"></fieldset>').appendTo(
-				$('<div class="ui-body ui-body-b"></div>').appendTo(form)
-			)
-		);
-
-	// add jquery mobile classes
-	form.find( ":jqmData(role='fieldcontain')" ).addClass("ui-field-contain ui-body ui-br");
-
-	form.find( ":jqmData(role='fieldcontain')" )
-		.children("label").addClass("ui-input-text");
-
-	form.find( ":jqmData(role='fieldcontain')" )
-		.children("input").addClass("ui-input-text ui-body-c")
-		.wrap('<div class="ui-input-text ui-shadow-inset ui-corner-all ui-btn-shadow ui-body-c ui-mini"></div>');
-	
-	$('.content').append(form);		
-
-	// Pages and O/S fields are initially hidden
-	$('.pages-field').css("display", "none");
-	$('.os-field').css("display", "none");
-});
-
-$(document).on("pageshow", "#editView", function() {
-	$('#barcode').val($('#item_code').text());
-});
-*/
-
-
 
 function scancode() {
 	setTimeout(function() {
