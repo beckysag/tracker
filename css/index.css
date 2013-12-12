@@ -150,6 +150,15 @@ nav#mobile ul li a:hover {
 	background-color: rgb(158, 36, 23);
 	background-image: linear-gradient(rgb(158, 36, 23), rgb(158, 36, 23));
 }
+
+/* Accessories section */
+.wide {
+	text-align:right;
+	padding:0; margin:0;
+}
+#show-acc-form {
+	padding:0; margin:0;
+}
 /******************** / EDIT PAGE STYLES ********************/
 
 
