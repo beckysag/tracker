@@ -1,0 +1,10 @@
+POST: Array
+(
+    [barcode] => eee
+    [type] => 2
+    [name] => tet
+    [model] => 
+    [description] => 
+    [features] => 
+    [condition] => N
+)

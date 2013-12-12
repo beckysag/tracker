@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>About Library Tracker</title>
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<style>
+	body {font-family:monospace;}
+	hr {margin:25px 0;}	
+	ul#structure, ul#structure li {list-style:none;}
+
+	table {
+		border-collapse: collapse;
+	}
+	
+	td, th {
+		border: 1px solid #999;
+		padding: 5px;
+	}
+
+	tbody tr th {
+		text-align:left;
+	}
+	thead {
+		text-align:center;
+	}
+
+	</style>
+</head>
+
+<body>
+<div data-role="page">
+
+	<h1>About Library Tracker</h1>
+	
+	<div data-role="content">  			
+	
+	<h2>Item Types</h2>
+	<ol>
+		<li>Hardware</li>
+		<li>Laptop</li>
+		<li>Mobile</li>
+		<li>Book</li>
+		<li>Game</li>
+	</ol>
+		
+	<hr>
+
+	<h2>Item Attributes</h2>
+	<table >
+		<thead>
+			<tr>
+				<th></th>
+				<th colspan="5">Type</th>
+				<th colspan="2"></th>
+			</tr>
+			<tr>
+				<th></th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+				<th>allow null (DB)?</th>
+				<th>allow null (app)?</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>item_id</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th>no</th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_code</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th>no</th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_type</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th>no</th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_name</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th>no</th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_description</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th></th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_features</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th></th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_condition</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th></th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_model</th>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<td>x</td>
+				<th></th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_os</th>
+				<td></td>
+				<td>x</td>
+				<td>x</td>
+				<td></td>
+				<td></td>
+				<th></th>
+				<th></th>
+			</tr>
+			<tr>
+				<th>item_pages</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<td>x</td>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</tbody>
+	</table>
+	<hr>
+
+
+	<h2>Structure</h2>
+	<ul id="structure">
+		<li>index.php
+			<ul>
+				<li>"browse available" ---> /find
+					<ul>
+						<li>----------</li>
+						<li>"hardware" --> hardware.php</li>
+						<li>"laptop" --> laptop.php</li>
+						<li>"mobile" --> mobile.php</li>
+						<li>"game" --> game.php</li>
+						<li>"book" --> book.php</li>
+						<li>----------</li>
+
+						<ul>
+							<li>"submit" --> results.php (data-ajax = FALSE)							
+								<ul>
+									<li>click --> detail.php									
+										<ul>
+											<li>"back" --> results.php</li>
+											<li>"edit" --> account/edit.php</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</ul>			
+				</li>
+				<li>"admin console" --> </li>
+			</ul>		
+		</li>
+	</ul>
+
+	</div><!-- end content --> 
+</div><!-- end page --> 
+</body>
+</html>
+
+

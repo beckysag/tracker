@@ -1,0 +1,155 @@
+@import "fonts.css";
+
+/** general classes **/
+
+a {
+	text-decoration:none;
+}
+
+h1, h2, h3, h4, h5 {
+	font-weight:300;
+}
+.round-btn {
+-webkit-box-shadow:none;
+		box-shadow:none;
+-webkit-border-radius: 		1em;
+		border-radius: 		1em;
+}
+
+
+.error{
+	color: red;
+}
+.success{
+	color: green;
+}
+
+
+.hidden {
+	display:none;
+}
+
+#welcome {
+	width:100%;
+	text-align:center;
+	font-size:20px;
+	padding-bottom:20%;
+}
+.center-text {
+	width:100%;
+	text-align:center;
+}
+#bottom {
+	margin-top:20%;
+}
+
+#bottom a {
+	text-decoration:none;
+	color:black;
+}
+
+.right{ 
+	float:right;
+}
+
+
+#or-box{
+	height:80px;
+	line-height:80px;
+	background-image:url('../images/line.png');
+	background-repeat:repeat-x;
+	background-position:center; 
+	text-align:center;
+}
+#or-box span{
+	padding:0 2px;
+	background:#EEEEEE;
+	/*background-image:linear-gradient(#f9f9f9,#eee);*/
+}
+#back-to-admin{
+	padding-bottom:40px;
+}
+
+
+
+/** header bar **/
+.btn-right {
+	font-size: 20px;
+	line-height: 1;
+	color: #fff;
+	cursor:pointer;
+	position: absolute;
+	right: 5px;
+	top: 11px;
+	vertical-align: middle;
+	margin: 0px;
+}
+
+
+
+/** item detail page **/
+#detailPage table, 
+#detailPage th, 
+#detailPage td {
+	text-align:left;
+	vertical-align:top;
+}
+#detailPage th {
+	font-weight:normal;
+	padding-right:15px;	
+}
+#detailPage th, #detailPage td {
+	padding-bottom:15px;	
+}
+
+
+
+
+
+/******************** EDIT-PAGE STYLES ********************/
+/* controlgroup styles */
+#editnav.ui-controlgroup.ui-mini {
+	text-align:center;
+}
+#editnav.ui-controlgroup.ui-mini .ui-controlgroup-controls {
+	width:60%;
+}
+#editnav.ui-controlgroup.ui-mini .ui-controlgroup-controls a {
+	width: calc(33.333% - 2px);
+}
+
+/* slide-down menu */
+nav#mobile, 
+nav#mobile ul, 
+nav#mobile ul li,
+nav#mobile ul li a {
+	margin:0;
+	padding:0;
+}
+nav#mobile {
+	background-color:#111;
+	box-shadow: 0 0 3px 2px rgba(0,0,0,0.3);
+	display:block;
+}
+nav#mobile ul li {
+	clear:both;
+	list-style:none;
+}
+nav#mobile ul li a {
+	display:block;
+	background-color:#fff;
+	color: rgb(158, 36, 23);	
+	margin:2px 0;
+	padding:6px 0 6px 8px;
+}
+nav#mobile ul li a:first-of-type {
+	margin-top:0;
+}
+nav#mobile ul li a:hover {
+	color:#fff;
+	background-color: rgb(158, 36, 23);
+	background-image: linear-gradient(rgb(158, 36, 23), rgb(158, 36, 23));
+}
+/******************** / EDIT PAGE STYLES ********************/
+
+
