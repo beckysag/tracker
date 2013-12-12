@@ -323,11 +323,10 @@ if ( $okay == 1) {
 	
 		<!-- ACCESSORY SECTION -->
 		<div id="section-acc">
-
-		<form>
-		<button id="submit-add-acc">Add Accessory</button>	
-		</form>
-
+			<div class="wide">
+				<a href="" id="show-acc-form" data-role="button" data-icon="plus" data-inline="true"
+					data-mini=true data-iconpos="right">Add Accessory</a>
+			</div>
 		</div>
 		<!-- / ACCESSORY SECTION -->
 		
@@ -349,48 +348,67 @@ if ( $okay == 1) {
 
 
 
-
-<div data-role="dialog" id="edit-acc-dialog">
-	
+<!-- dialog with form to edit accessory -->
+<div data-role="dialog" id="edit-acc-dialog">	
 	<div data-role="header" data-theme="d">
 		<h1></h1>
 	</div>
-
 	<div data-role="content">		
-
-		<form>
+		<form id="acc-form">
 			<div data-role="fieldcontain">
 				<label for="name">Name:</label>
 				<input type="text" name="acc_name" id="name" data-mini="true"/>
 			</div>
-
 			<div data-role="fieldcontain">
 				<label for="quantity">Quantity:</label>
 				<input type="number" name="acc_quantity" id="quantity" data-mini="true"/>
 			</div>
-
 			<div data-role="fieldcontain">
 				<label for="description">Description:</label>
 				<textarea cols="40" rows="8" name="acc_description" id="description" data-mini="true"></textarea>
 			</div>
-
 			<input type="hidden" name="acc_id" id="id" data-mini="true"/>
-
 			<fieldset class="ui-grid-a">
 				<div class="ui-block-a"><a href="" data-role="button" data-rel="back">Cancel</a></div>	   
 				<div class="ui-block-b"><a href="" id="submit-update-acc" data-role="button" data-rel="back">Submit</a></div>	   
 			</fieldset>
-
 			<a href="" data-role="button" id="submit-remove-acc" data-rel="back">Delete</a>       
-			<a href="" data-role="button" id="dialog-back" data-rel="back">Back</a>       
-		</form>
-		
-
-
+		</form>		
+		<a href="" data-role="button" id="dialog-back" data-rel="back">Back</a>       
 	</div>
 </div>
 
 
+<!-- dialog with form to add accessory -->
+<div data-role="dialog" id="add-acc-dialog">	
+	<div data-role="header">
+		<h1>New Accessory</h1>
+	</div>
+	<div data-role="content">		
+		<form>
+			<div data-role="fieldcontain">
+				<label for="name_add">Name:</label>
+				<input type="text" name="acc_name" id="name_add" data-mini="true"/>
+			</div>
+			<div data-role="fieldcontain">
+				<label for="quantity_add">Quantity:</label>
+				<input type="number" name="acc_quantity" id="quantity_add" data-mini="true"/>
+			</div>
+			<div data-role="fieldcontain">
+				<label for="description_add">Description:</label>
+				<textarea cols="40" rows="8" name="acc_description" id="description_add" data-mini="true"></textarea>
+			</div>
+
+			<input type="hidden" name="acc_item" data-mini="true"/>
+
+			<fieldset class="ui-grid-a">
+				<div class="ui-block-a"><a href="" data-role="button" data-rel="back">Cancel</a></div>	   
+				<div class="ui-block-b"><a href="" id="submit-add-acc" data-role="button" data-rel="back">Submit</a></div>	   
+			</fieldset>
+		</form>		
+		<a href="" data-role="button" id="dialog-add-back" data-rel="back">Back</a>       
+	</div>
+</div>
 
 
 
