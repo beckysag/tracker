@@ -8,7 +8,6 @@ echo '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>';
 	<head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Library Tracker - Admin</title>
-
 	<link rel="stylesheet" href="../css/jquery.mobile-1.3.1.css" />
 	<link rel="stylesheet" href="../css/index.css" />	
 	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -19,7 +18,7 @@ echo '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>';
 
 
 <body>
-<div data-role="page">
+<div data-role="page" id="getBarcode">
 
 	<div data-role="header" data-position="fixed">
 		<h1>Library Tracker Admin</h1>
@@ -35,11 +34,10 @@ echo '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>';
 
 		<?php
 		GLOBAL $msg;
-		echo $msg . "<br>" . "<br>";
+		echo '<p class="error message">' . $msg . '</p>';
 		?>
 
 		Enter item barcode
-		<!--button type="button" name="scan" id="scan" onclick="scancode();">Scan</button-->
 		<a href="<?php echo $callback;?>" data-role="button">Scan Barcode with Phone</a>
 		
 		<div id="or-box">
@@ -64,5 +62,3 @@ echo '<' . '?xml version="1.0" encoding="UTF-8" ?' . '>';
 
 </body>
 </html>
-
-

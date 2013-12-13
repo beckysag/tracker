@@ -17,6 +17,15 @@ function clean($data)
     return trim($data);
 }
 
+// From: https://maxmorgandesign.com/php_remove_slashes_from_array/
+function array_stripslash($theArray){
+	foreach ( $theArray as &$v ) 
+		if ( is_array($v) ) 
+			$v = array_stripslash($v); 
+		else $v = stripslashes($v);
+   return $theArray;
+}
+
 
 
 /**
@@ -63,5 +72,16 @@ function printvar($var)
     echo '</pre>';
 }
 
-
+function get_condition($str) {
+	$ret = "";
+	if ($str == 'N')
+		$ret = 'New';
+	elseif ($str == 'LN')
+		$ret = 'Like New';
+	elseif ($str == 'P')
+		$ret = 'Poor';
+	elseif ($str == 'G')
+		$ret = 'Good';
+	return $ret;
+}
 ?>

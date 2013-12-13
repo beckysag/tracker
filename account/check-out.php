@@ -23,20 +23,14 @@ require_once("../config/config.php");
 // load the login class
 require_once("../classes/Login.php");
 
+GLOBAL $msg;
 
-
-
-/************* AUTHENTICATION *************/
+// Authentication
 $login = new Login();
-
-if (($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true)) {
-	// is user is admin, show the admin page
-	
-} else {
+if (!(($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true))) {
     // the user is not logged in
 	header("Location:../index.php");
 }
-
 
 // Open connection to database
 try {
@@ -46,11 +40,7 @@ try {
 	echo "Error!: " . $e->getMessage(); 
 }
 
-
-
-
-
-GLOBAL $msg;
+// Callback for scanning
 $callback = "pic2shop://scan?callback=http://web.engr.oregonstate.edu/~sagalynr/tracker/account/check-out.php?barcode=EAN";
 
 // Check code if submitted by form
@@ -81,6 +71,13 @@ if (!empty($_POST['barcode'])) { // if a barcode was submitted
         $msg = "Item doesnt exist in database. Add it first.";
 		include('views/getbarcode.php');
 	}	
+} 
+
+// If form was submitted but without a barcode, tell user a barcode is required
+// and show the "getbarcode" page again
+elseif (isset($_POST['barcode'])) { 
+	$msg = "Please enter a barcode on continue.";
+	include('views/getbarcode.php');
 
 } elseif (!empty($_POST['username'])) { // if a username was submitted
 	// If we get to this point, we know a valid barcode was already given and 

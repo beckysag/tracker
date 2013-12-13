@@ -10,11 +10,8 @@ try { // Open connection to database
 
 $arr = array();
 $rslt = array();
-
-$sql = 'UPDATE accessories
-    SET	acc_name = ?, acc_description = ?, acc_quantity = ?
-	WHERE acc_id = ?';
-
+$sql = 'UPDATE accessories SET acc_name = ?, acc_description = ?, 
+		 acc_quantity = ? WHERE acc_id = ?';
 
 // acc_name is required
 if (!empty($_POST["acc_name"])) {
@@ -47,11 +44,8 @@ if (!empty($_POST["acc_id"])) {
 	echo json_encode($rslt);
 	exit();
 }
-
-
 $stmt = $conn->prepare($sql);
 $stmt->execute($arr);
-
 
 $rslt['errno'] = 0;
 $rslt['name'] = $_POST["acc_name"];

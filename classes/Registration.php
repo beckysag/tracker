@@ -20,9 +20,13 @@ class Registration
      */
     private $user_name = "";
     /**
-     * @var string $user_email The user's mail
+     * @var string $user_fname The user's first name
      */
-    private $user_email = "";
+    private $user_fname = "";
+    /**
+     * @var string $user_lname The user's last name
+     */
+    private $user_lname = "";
     /**
      * @var string $user_password The user's password
      */
@@ -62,10 +66,16 @@ class Registration
     private function registerNewUser()
     {
         if (empty($_POST['user_name'])) {
-            $this->errors[] = "Empty Username";
+            $this->errors[] = "Username is required";
+        }         
+        if (empty($_POST['user_fname'])) {
+            $this->errors[] = "First name is required";
+        }         
+        if (empty($_POST['user_lname'])) {
+            $this->errors[] = "Last name is required";
         }         
         elseif (empty($_POST['user_password_new']) || empty($_POST['user_password_repeat'])) {
-            $this->errors[] = "Empty Password";
+            $this->errors[] = "Password is required";
         }         
         elseif ($_POST['user_password_new'] !== $_POST['user_password_repeat']) {
             $this->errors[] = "Password and password repeat are not the same";
@@ -79,21 +89,10 @@ class Registration
         elseif (!preg_match('/^[a-z\d]{2,64}$/i', $_POST['user_name'])) {
             $this->errors[] = "Username does not fit the name scheme: only a-Z and numbers are allowed, 2 to 64 characters";
         }         
-        elseif (empty($_POST['user_email'])) {
-            $this->errors[] = "Email cannot be empty";
-        } 
-        elseif (strlen($_POST['user_email']) > 64) {
-            $this->errors[] = "Email cannot be longer than 64 characters";
-        } 
-        elseif (!filter_var($_POST['user_email'], FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = "Your email address is not in a valid email format";
-        } elseif (!empty($_POST['user_name'])
+		elseif (!empty($_POST['user_name'])
             && strlen($_POST['user_name']) <= 64
             && strlen($_POST['user_name']) >= 2
             && preg_match('/^[a-z\d]{2,64}$/i', $_POST['user_name'])
-            && !empty($_POST['user_email'])
-            && strlen($_POST['user_email']) <= 64
-            && filter_var($_POST['user_email'], FILTER_VALIDATE_EMAIL)
             && !empty($_POST['user_password_new'])
             && !empty($_POST['user_password_repeat'])
             && ($_POST['user_password_new'] === $_POST['user_password_repeat'])
@@ -110,7 +109,8 @@ class Registration
 
                 // escapin' this, additionally removing everything that could be (html/javascript-) code
                 $this->user_name = $this->db_connection->real_escape_string(htmlentities($_POST['user_name'], ENT_QUOTES));
-                $this->user_email = $this->db_connection->real_escape_string(htmlentities($_POST['user_email'], ENT_QUOTES));
+                $this->user_fname = $this->db_connection->real_escape_string(htmlentities($_POST['user_fname'], ENT_QUOTES));
+                $this->user_lname = $this->db_connection->real_escape_string(htmlentities($_POST['user_lname'], ENT_QUOTES));
 
                 $this->user_password = $_POST['user_password_new'];
 
@@ -127,8 +127,9 @@ class Registration
                 } else {
                     // write new users data into database
                     $query_new_user_insert = $this->db_connection->query("INSERT INTO users (user_name,
-                    	user_password_hash, user_email, user_type) VALUES('" . $this->user_name . "', '" . 
-                    	$this->user_password_hash . "', '" . $this->user_email . "', 2);");
+                    	user_password_hash, user_fname, user_lname, user_type) VALUES('" . $this->user_name 
+                    		. "', '" . $this->user_password_hash . "', '" . $this->user_fname. "', '" 
+                    		. $this->user_lname . "', 2);");
 
                     if ($query_new_user_insert) {
                         $this->messages[] = "Your account has been created successfully. You can now log in.";

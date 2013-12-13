@@ -5,9 +5,18 @@
 a {
 	text-decoration:none;
 }
-
 h1, h2, h3, h4, h5 {
 	font-weight:300;
+}
+table, th, td {
+	text-align:left;
+	vertical-align:top;
+}
+th, td {
+	padding-bottom:15px;	
+}
+th:first-child {
+	padding-right:15px;	
 }
 .round-btn {
 -webkit-box-shadow:none;
@@ -15,20 +24,15 @@ h1, h2, h3, h4, h5 {
 -webkit-border-radius: 		1em;
 		border-radius: 		1em;
 }
-
-
 .error{
 	color: red;
 }
 .success{
 	color: green;
 }
-
-
 .hidden {
 	display:none;
 }
-
 #welcome {
 	width:100%;
 	text-align:center;
@@ -42,17 +46,13 @@ h1, h2, h3, h4, h5 {
 #bottom {
 	margin-top:20%;
 }
-
 #bottom a {
 	text-decoration:none;
 	color:black;
 }
-
 .right{ 
 	float:right;
 }
-
-
 #or-box{
 	height:80px;
 	line-height:80px;
@@ -64,13 +64,10 @@ h1, h2, h3, h4, h5 {
 #or-box span{
 	padding:0 2px;
 	background:#EEEEEE;
-	/*background-image:linear-gradient(#f9f9f9,#eee);*/
 }
 #back-to-admin{
 	padding-bottom:40px;
 }
-
-
 
 /** header bar **/
 .btn-right {
@@ -86,14 +83,8 @@ h1, h2, h3, h4, h5 {
 }
 
 
+/* ITEM DETAIL PAGE STYLES */
 
-/** item detail page **/
-#detailPage table, 
-#detailPage th, 
-#detailPage td {
-	text-align:left;
-	vertical-align:top;
-}
 #detailPage th {
 	font-weight:normal;
 	padding-right:15px;	
@@ -104,15 +95,14 @@ h1, h2, h3, h4, h5 {
 
 
 
+/* EDIT-PAGE STYLES */
 
-
-/******************** EDIT-PAGE STYLES ********************/
 /* controlgroup styles */
 #editnav.ui-controlgroup.ui-mini {
 	text-align:center;
 }
 #editnav.ui-controlgroup.ui-mini .ui-controlgroup-controls {
-	width:60%;
+	width:100%;
 }
 #editnav.ui-controlgroup.ui-mini .ui-controlgroup-controls a {
 	width: calc(33.333% - 2px);

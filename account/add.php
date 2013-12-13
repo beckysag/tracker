@@ -1,4 +1,9 @@
 <?php
+/*                                                                		
+ * Displays form to add a new item to the database. The barcode is prepopulated from the
+ * previous form, where the item was scanned (or the barcode was manually entered).
+ *                                                                		
+ */
 
 // checking for minimum PHP version
 if (version_compare(PHP_VERSION, '5.3.7', '<')) {
@@ -15,14 +20,10 @@ require_once("../config/config.php");
 require_once("../classes/Login.php");
 
 
-/************* AUTHENTICATION *************/
+// Authenticate user, and return to homepage if user isn't logged in
 $login = new Login();
-
-if (($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true)) {
-	// is user is admin, show the admin page
-	
-} else {
-    // the user is not logged in
+if (!(($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true))) {
+    // The user is not logged in
 	header("Location:../index.php");
 }
 
@@ -54,7 +55,6 @@ if (!empty($_POST['barcode'])) { // if a barcode was submitted
 	if (count($rows) == 0) {
 		// Show form to add details with barcode in form
 		$okay = 1;
-		//include('views/edit.php');
 								
 	} else { // Invalid barcode
         $msg = "Item already exists in database.";
@@ -66,14 +66,7 @@ if (!empty($_POST['barcode'])) { // if a barcode was submitted
 }
 
 if ($okay == 1 ) {
-
 ?>
-
-
-
-
-
-
 
 
 <!DOCTYPE html>
@@ -116,7 +109,7 @@ if ($okay == 1 ) {
 			<div data-role="fieldcontain">
 				<label for="barcode">Barcode:</label>
 				<input type="text" name="barcode" id="barcode" 
-						value="<?php echo $_POST['barcode'];?>" data-mini="true"/>
+						value="<?php echo $_POST['barcode'];?>" data-mini="true" readonly />
 			</div>
 
 			<div data-role="fieldcontain">
@@ -194,15 +187,5 @@ if ($okay == 1 ) {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
 
 <?php }?>

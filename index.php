@@ -42,7 +42,7 @@ if ($login->isUserLoggedIn() == true) {
 
 
 <body>
-<div data-role="page">
+<div data-role="page" id="homePage">
 
 	<div data-role="header" data-position="fixed">
 		<h1>Library Tracker</h1>
@@ -89,4 +89,3 @@ if ($LoggedIn == false) { ?>
 
 </body>
 </html>
-

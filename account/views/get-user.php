@@ -22,7 +22,7 @@
 	<div data-role="content">
 <?php
 GLOBAL $msg;
-echo $msg;
+echo '<p class="error message">' . $msg . '</p>';
 ?>
 		<form method="post">
 			<div data-role="fieldcontain">

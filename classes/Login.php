@@ -100,6 +100,13 @@ class Login
      */
     private function loginWithPostData()
     {
+
+// Log POST and SESSION superglobals to file
+$post = print_r($_POST,true);
+$sess = print_r($_SESSION,true);
+$log = 'POST: ' . $post . 'SESSION: ' . $sess;
+file_put_contents('log.txt',$log);
+
         // if POST data contains non-empty user_name & non-empty user_password
         if (!empty($_POST['user_name']) && !empty($_POST['user_password'])) {
 
@@ -113,7 +120,7 @@ class Login
                 // escape the POST stuff
                 $this->user_name = $this->db_connection->real_escape_string($_POST['user_name']);
                 // database query, getting all the info of the selected user
-                $sql = "SELECT user_name, user_email, user_type, user_password_hash 
+                $sql = "SELECT user_name, user_type, user_password_hash 
                 		FROM users WHERE user_name = '" . $this->user_name . "';";
                 $checklogin = $this->db_connection->query($sql);
 
@@ -129,7 +136,6 @@ class Login
 
                         // write user data into PHP SESSION [a file on your server]
                         $_SESSION['user_name'] = $result_row->user_name;
-                        $_SESSION['user_email'] = $result_row->user_email;
                         $_SESSION['user_logged_in'] = 1;
                         $_SESSION['user_type'] = $result_row->user_type;
 

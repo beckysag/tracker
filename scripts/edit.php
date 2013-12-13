@@ -10,18 +10,15 @@ try { // Open connection to database
 	echo "Error!: " . $e->getMessage(); 
 }
 
+// Strip slashes
+if ( !empty($_POST) ) $_POST = array_stripslash($_POST);
 
 $arr = array();
 $rslt = array();
-
-
-$sql = 'UPDATE items 
-        SET item_type = ?, item_name = ?, 
-            item_description = ?, item_features = ?, 
-	         item_condition = ?, item_model = ?, 
-	         item_os = ?, item_pages = ? 
-	     WHERE item_code = ?';
-
+$sql = 'UPDATE items SET item_type = ?, item_name = ?, 
+		item_description = ?, item_features = ?, 
+		item_condition = ?, item_model = ?, item_os = ?, 
+		item_pages = ? WHERE item_code = ?';
 
 // Type is required
 if (!empty($_POST["type"])) {
@@ -67,6 +64,13 @@ if (!empty($_POST["os"])) { // Operating System
 	array_push($arr, NULL);
 }
 if (!empty($_POST["pages"])) { // Pages
+	// Is it a number??
+	if (preg_match('/[^0-9]/', $_POST["pages"])) {
+		$rslt['err'] = "Pages must be a numberic value";
+		$rslt['errno'] = -1;
+		echo json_encode($rslt);
+		exit();	
+	}
 	array_push($arr, $_POST["pages"]);
 } else {
 	array_push($arr, NULL);
@@ -82,11 +86,8 @@ if (!empty($_POST["barcode"])) {
 	exit();
 }
 
-
-
 $stmt = $conn->prepare($sql);
 $stmt->execute($arr);
-
 
 $rslt['errno'] = 0;
 $rslt['name'] = $_POST["name"];

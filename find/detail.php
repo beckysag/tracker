@@ -41,39 +41,70 @@ $login = new Login();
 			data-icon="back" data-inline="true">Back</a>
 
 	<?php
-	if (($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true)) {
-		echo '<a href=# data-role="button" data-icon="edit" data-inline="true" id="edit">Edit</a>';
-	}
+	if (empty ($_POST['item-code'])) {
+		echo "Start a new search.";
+	} else {
 
-	$n = $d = $c = $f = "";
-	if (!empty ($_POST['item-name'])) $n = $_POST['item-name'];			
-	if (!empty ($_POST['item-description'])) $d = $_POST['item-description'];			
-	if (!empty ($_POST['item-features'])) $f = $_POST['item-features'];			
-	if (!empty ($_POST['item-code'])) $c = $_POST['item-code'];			
+		if (($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true)) {
+			echo '<a href=# data-role="button" data-icon="edit" data-inline="true" id="edit">Edit</a>';
+		}
 
-	echo '<h3>' . $n . '</h3>';		
-	?>	
+		// Strip slashes
+		if ( !empty($_POST) ) $_POST = array_stripslash($_POST);
 
-		
-	<table>
+		$n = $d = $c = $f = "";
+		if (!empty ($_POST['item-name'])) $n = $_POST['item-name'];			
+		if (!empty ($_POST['item-description'])) $d = clean($_POST['item-description']);			
+		if (!empty ($_POST['item-features'])) $f = $_POST['item-features'];			
+		if (!empty ($_POST['item-code'])) $c = $_POST['item-code'];			
+
+		echo '<h3>' . $n . '</h3>';		
+
+		try {
+			$conn = new PDO('mysql:host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME,DB_USER,DB_PASS);
+			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			echo "Error!: " . $e->getMessage(); 
+		}
+		$stmt = $conn->prepare('SELECT * FROM items WHERE item_code = :barcode');
+		$stmt->execute(array('barcode' => $_POST['item-code']));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$arr = $rows[0];
+					
+		echo '	<table>
 		<tbody>
 			<tr>
-				<th>ID</th>
-				<td class="code-field"><?php echo $c;?></td>
+				<th>Barcode</th>
+				<td class="code-field">'. $c .'</td>
 			</tr>
 			<tr>
 				<th scope="row">Features</th>
-				<td><?php echo $f;?></td>
+				<td>'. $f .'</td>
 			</tr>
 			<tr>
 				<th scope="row">Description</th>
-				<td><?php echo $d;?></td>
+				<td>'. $d .'</td>
+			</tr>
+			<tr>
+				<th scope="row">Condition</th>
+				<td>'. get_condition($arr['item_condition']) .'</td>
+			</tr>
+			<tr>
+				<th scope="row">Model</th>
+				<td>'. $arr['item_model'] .'</td>
 			</tr>
 		</tbody>
-	</table>
+	</table>';
+		$stmt = $conn->prepare('SELECT * FROM items LEFT JOIN loans ON item_id=loan_item ' .
+			'WHERE item_code = :barcode AND loan_in IS NULL AND loan_out IS NOT NULL');
+		$stmt->execute(array('barcode' => $_POST['item-code']));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		if (count($rows) == 0) echo '<p class="success">Available to rent</p>';
+		else echo '<p class="error">Currently checked out.</p>';
+	}
+	?>	
 
-
-	<form class="hidden" action="../account/edit.php" method="post" id="edit-form">
+	<form class="hidden" action="../account/edit.php" method="post" id="edit-form" data-ajax="false">
 		<input type="text" name="barcode" id="item_code" />
 		<button type="submit" data-theme="a" data-mini="true" id="submit-btn">Submit</button>
 	</form>

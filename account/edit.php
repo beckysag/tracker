@@ -1,18 +1,8 @@
 <?php
 /*
-
-TODO: when click on "VIEW" refresh $arr() in case item has been updated
-TODO: show accessories in view section
-TODO: make sure edit.php scriot handles os and pages (now ajax function in index.js isn't checkoing for them)
-
-
- * Path: 	account/edit.php
- * Page ID: editPage
- * 
  * This page allows user to edit and add/edit/remove accessories for 
  * a given item. Edit section and add-accessory sections are toggled
  * by clicking the "edit" and "add accessories" buttons.
- * 
  */
 
 // check for minimum PHP version
@@ -29,55 +19,38 @@ require_once("../config/config.php");
 // load the login class
 require_once("../classes/Login.php");
 
-
-//----------------------- AUTHENTICATION -----------------------//
+// Authenticate user, redirect to homepage if not logged in
 $login = new Login();
-
-if (($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true)) {
-	// is user is admin, show the admin page
-	
-} else {
+if (!(($login->isUserLoggedIn() == true) && ($login->isUserAdmin() == true))) {
     // the user is not logged in
 	header("Location:../index.php");
 }
-//----------------------- AUTHENTICATION -----------------------//
 
-
-
-/******** JUST FOR TESTING --- remove later ********/
-	$_POST['barcode'] = 'AKB2519374';
-/******** JUST FOR TESTING --- remove later ********/
-
-
-
-//------------------------- PAGE SETUP -------------------------//
+// Page setup
+GLOBAL $msg;
 $okay = -1;
 $code = "";
 $arr = array();
 
-// Check code if submitted by form
-if (!empty($_POST['barcode'])) { // if an item was submitted
-
+// The barcode should have been posted if page was accessed in valid way
+if (!empty($_POST['barcode'])) {
 	$code = $_POST['barcode'];
-
 
 	// Open connection to database
 	try {
-		$conn = new PDO('mysql:host=' . DB_HOST . ';port='.DB_PORT.
-						';dbname=' . DB_NAME, DB_USER, DB_PASS);
+		$conn = new PDO('mysql:host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME,DB_USER,DB_PASS);
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	} catch (PDOException $e) {
 		echo "Error!: " . $e->getMessage(); 
 	}
 	
-	// Is it a valid code?
+	// Check to see if barcode exists in database
 	$stmt = $conn->prepare('SELECT * FROM items WHERE item_code = :barcode');
 	$stmt->execute(array('barcode' => $_POST['barcode']));
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	if (count($rows) == 0) {
-		
-	} else { // barcode is valid
+	// If barcode exists, 1 row will be returned
+	if (count($rows) == 1) {
 		$okay = 1;
 		$arr = $rows[0];
 
@@ -98,29 +71,23 @@ if (!empty($_POST['barcode'])) { // if an item was submitted
 				$item_type = 'Game';
 				break;
 		}
-
-
-
-	}	
-
-} else { // nothing posted, just browed here
+	}
+} else { 
+	// If barcode wasn't posted, then user browsed here, so 
+	// redirect to homepage because we need a valid barcode to edit
 	header("Location:../index.php");
 }
-//------------------------- PAGE SETUP -------------------------//
-
 
 // If we reach this point, we have a valid barcode number and 
 // array $arr filled with its attributes
-
 if ( $okay == 1) {
 ?>
-
 
 <!DOCTYPE html>
 <html>
 	<head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Library Tracker - Admin</title>
+	<title>Library Tracker Admin</title>
 
 	<link rel="stylesheet" href="../css/jquery.mobile-1.3.1.css" />
 	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -136,7 +103,7 @@ if ( $okay == 1) {
 	<!-- HEADER -->
 	<div data-role="header" data-position="fixed" data-tap-toggle="false">
 		<h1>Library Tracker Admin</h1>
-		<a href="../" class="round-btn" data-icon="home" data-iconpos="notext">Home</a>
+		<a href="../" data-icon="home" data-iconpos="notext">Home</a>
 		<span class="btn-right navtoggle">&#9776</span>		
 	</div><!-- /HEADER -->
 	
@@ -145,25 +112,16 @@ if ( $okay == 1) {
 	<div data-role="content" class="content">
     
 		<?php
-			GLOBAL $msg;
-
-			if (strlen($msg) > 0) { 
-				echo $msg . "<br>" . "<br>";
-			}
-
-			echo '<h1>' . $arr['item_name'] . '</h1>';
+			if (strlen($msg) > 0) 
+				echo $msg."<br>"."<br>";
+			echo '<h1 class="item-title">'.$arr['item_name'].'</h1>';
 		?>
 
-
 		<div data-role="controlgroup" data-type="horizontal" data-mini="true" id="editnav">
-			<a href="" id="btn-view-item" data-role="button" data-icon="bars"
-				data-iconpos="right">View</a>
-			<a href="" id="btn-edit-item" data-role="button" data-icon="edit"
-				data-iconpos="right">Edit</a>
-			<a href="#" id="btn-add-acc" data-role="button" data-icon="plus" 
-				data-iconpos="right">Add Accessories</a>
+			<a href="" id="btn-view-item" data-role="button" data-icon="bars" data-iconpos="right">View</a>
+			<a href="" id="btn-edit-item" data-role="button" data-icon="edit" data-iconpos="right">Edit</a>
+			<a href="" id="btn-add-acc" data-role="button" data-icon="plus" data-iconpos="right">Accessories</a>
 		</div>
-
 
 
 		<!-- VIEW SECTION -->
@@ -197,7 +155,7 @@ if ( $okay == 1) {
 					</tr>
 
 					<!-- only show OS if item type = laptop or mobile -->
-					<?php if ( ($item_type == 2) || ($item_type == 3) ) { ?>	
+					<?php if ( ($arr['item_type'] == 2) || ($arr['item_type'] == 3) ) { ?>	
 					<tr id="row-os">
 						<th scope="row">OS</th>
 						<td><?php echo $arr['item_os'];?></td>
@@ -205,10 +163,10 @@ if ( $okay == 1) {
 					<?php } ?>	
 
 					<!-- only show pages if item type = book -->
-					<?php if ( $item_type == 4 ) { ?>	
+					<?php if ( $arr['item_type'] == 4 ) { ?>	
 					<tr id="row-pages">
 						<th scope="row">Pages</th>
-						<td><?php echo $arr['item_code'];?></td>
+						<td><?php echo $arr['item_pages'];?></td>
 					</tr>
 					<?php } ?>	
 				</tbody>
@@ -223,35 +181,19 @@ if ( $okay == 1) {
 			<form method="post">
 				<div data-role="fieldcontain">
 					<label for="barcode">Barcode:</label>
-					<input type="text" name="barcode" id="barcode" 
-							value="<?php echo $code;?>" data-mini="true" readonly/>
+					<input type="text" name="barcode" id="barcode" value="<?php echo $code;?>" 
+						data-mini="true" readonly/>
 				</div>
 
 				<div data-role="fieldcontain">
 					<label for="select-choice-min" class="select">Type:</label>
-					<select name="select-choice-min" id="select-choice-min" data-mini="true">
-
+					<select name="select-choice-min" id="select-choice-min" data-mini="true">					
 						<option value="0"></option>
-
-						<option value="1" 
-							<?php if ($arr['item_type'] == 1) echo 'selected';?>>Hardware
-						</option>
-				   
-					   <option value="2"
-						   <?php if ($arr['item_type'] == 2) echo 'selected';?>>Computer
-						</option>
-				   
-					   <option value="3"
-						   <?php if ($arr['item_type'] == 3) echo 'selected';?>>Mobile
-						</option>
-				   
-						<option value="4"
-							<?php if ($arr['item_type'] == 4) echo 'selected';?>>Book
-						</option>
-				   
-						<option value="5"
-							<?php if ($arr['item_type'] == 5) echo 'selected';?>>Game
-						</option>
+						<option value="1"<?php if ($arr['item_type'] == 1) echo ' selected';?>>Hardware</option>
+						<option value="2"<?php if ($arr['item_type'] == 2) echo ' selected';?>>Laptop</option>						
+						<option value="3"<?php if ($arr['item_type'] == 3) echo ' selected';?>>Mobile</option>				   
+						<option value="4"<?php if ($arr['item_type'] == 4) echo ' selected';?>>Book</option>				   
+						<option value="5"<?php if ($arr['item_type'] == 5) echo ' selected';?>>Game</option>
 					</select>
 				</div>
 			
@@ -273,17 +215,23 @@ if ( $okay == 1) {
 						value="<?php echo $arr['item_features'];?>" data-mini="true"/>
 				</div>
 
+				<?php if ( $arr['item_type'] == 4 ) { ?>	
+				<!-- only show pages if item type = book -->
 				<div data-role="fieldcontain" class="pages-field">
 					<label for="pages">Pages:</label>
 					<input type="text" name="pages" id="pages" 
 						value="<?php echo $arr['item_pages'];?>" data-mini="true"/>
 				</div>
+				<?php } ?>	
 
+				<?php if ( ($arr['item_type'] == 2) || ($arr['item_type'] == 3) ) { ?>	
+				<!-- only show OS if item type = laptop or mobile -->
 				<div data-role="fieldcontain" class="os-field">
 					<label for="os">Operating System:</label>
 					<input type="text" name="os" id="os" 
 					value="<?php echo $arr['item_os'];?>" data-mini="true"/>
 				</div>
+				<?php } ?>	
 
 				<div data-role="fieldcontain">
 					<label for="description">Description:</label>
@@ -311,14 +259,15 @@ if ( $okay == 1) {
 				<!-- handled in index.js, form data sent to scripts/edit.php -->
 				<div class="ui-body ui-body-b">
 					<fieldset class="ui-grid">
-							<button type="submit" data-theme="a" data-mini="true" 
-									id="submit-edit">Submit</button>
+						<button type="submit" data-theme="a" data-mini="true" id="submit-edit">Submit</button>
 					</fieldset>
 				</div>
+
+				<input type="hidden" name="item_id" value="<?php echo $arr['item_id'];?>" />
+
 			</form>	
 		</div>
 		<!-- / EDIT SECTION -->
-		
 	
 	
 		<!-- ACCESSORY SECTION -->
@@ -329,22 +278,10 @@ if ( $okay == 1) {
 			</div>
 		</div>
 		<!-- / ACCESSORY SECTION -->
-		
-					
-	</div><!-- end content --> 
-  
-  
-	<div data-role="panel" id="panel-nav" data-position="right" data-display="overlay">
-		<ul data-role="listview" data-inset="false" data-icon="false" class="jqm-list">
-			<li><a href="<?php GLOBAL $site_root; echo $site_root;?>">Admin Home</a></li>
-            <li><a href="../../demos/">Logout</a></li>
-		</ul>
-	</div><!-- /panel -->
-	  
-  
+							
+	</div><!-- end content --> 	  
   
 </div><!-- end page --> 
-
 
 
 
@@ -381,7 +318,7 @@ if ( $okay == 1) {
 
 <!-- dialog with form to add accessory -->
 <div data-role="dialog" id="add-acc-dialog">	
-	<div data-role="header">
+	<div data-role="header" data-theme="d">
 		<h1>New Accessory</h1>
 	</div>
 	<div data-role="content">		
@@ -409,8 +346,6 @@ if ( $okay == 1) {
 		<a href="" data-role="button" id="dialog-add-back" data-rel="back">Back</a>       
 	</div>
 </div>
-
-
 
 
 </body>

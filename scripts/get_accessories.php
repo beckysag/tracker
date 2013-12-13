@@ -27,13 +27,6 @@ $stmt = $conn->prepare(
 $stmt->execute(array('barcode' => $_POST['barcode']));
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if (count($rows) == 0) {
-	$rslt['err'] = "Invalid barcode";
-	$rslt['errno'] = -1;
-	echo json_encode($rslt);
-	exit();
-}
-
 $rslt = $rows;
 $rslt['errno'] = 0;
 $rslt['n'] = count($rows);
